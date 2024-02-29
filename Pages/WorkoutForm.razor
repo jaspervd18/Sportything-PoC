@@ -1,0 +1,50 @@
+﻿@page "/create"
+@using Internship.BlazorServerPOC.Models
+
+<PageTitle>Create Workout</PageTitle>
+
+<div class="mb-5">
+    <label for="user-select">Select User:</label>
+    <select id="user-select" class="form-select" style="width:20%" @bind="@User">
+        <option value="">Logged out</option>
+        @foreach (var user in Users)
+        {
+            <option value="@user.Name">@user.Name</option>
+        }
+    </select>
+</div>
+
+@if (String.IsNullOrEmpty(User))
+{
+    <p class="text-muted">Log in om een activiteit te kunnen loggen.</p>
+    return;
+}
+
+<EditForm Model="@Workout" OnSubmit="@Submit" style="width:50%">
+    <div class="form-group mb-2">
+        <label for="date">Date:</label>
+        <InputDate id="date" class="form-control" @bind-Value="Workout.Date" />
+    </div>
+    <div class="form-group mb-2">
+        <label for="title">Title:</label>
+        <InputText id="title" class="form-control" @bind-Value="Workout.Title" />
+    </div>
+    <div class="form-group mb-2">
+        <label for="description">Description:</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="Workout.Description"/>
+    </div>
+    <div class="form-group mb-2">
+        <label for="activityType">Activity Type:</label>
+        <InputSelect id="activityType" class="form-control" @bind-Value="Workout.ActivityType">
+            @foreach (var activityType in Enum.GetValues(typeof(ActivityType)))
+            {
+                <option value="@activityType">@activityType</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group mb-2">
+        <label for="distance">Distance (km):</label>
+        <InputNumber id="distance" class="form-control" @bind-Value="Workout.Distance" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create Workout</button>
+</EditForm>

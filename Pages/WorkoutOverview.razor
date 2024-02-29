@@ -1,0 +1,84 @@
+@page "/"
+@using Internship.BlazorServerPOC.Icons
+@using Internship.BlazorServerPOC.Models
+
+<PageTitle>Sportything</PageTitle>
+
+<div class="mb-5">
+    <label for="user-select">Select User:</label>
+    <select id="user-select" class="form-select" style="width:20%" @onchange="@OnSelectUser">
+        <option value="">Logged out</option>
+        @foreach (var user in Users)
+        {
+            <option value="@user.Name">@user.Name</option>
+        }
+    </select>
+</div>
+
+<div class="mb-2">
+    <label for="user-select">Activity type:</label>
+    <select id="user-select" class="form-select" style="width:20%" @onchange="@OnFilterActivityType">
+        <option value="">None</option>
+        @foreach (var activityType in Enum.GetValues(typeof(ActivityType)))
+        {
+            <option value="@activityType">@activityType</option>
+        }
+    </select>
+</div>
+
+@if (Workouts.Count() == 0)
+{
+    <p class="text-muted">Het is hier rustig...</p>
+    return;
+}
+
+<div class="row row-cols-1 justify-content-center">
+    @foreach (var workout in Workouts)
+    {
+        @if (workout.IsPrivate)
+        {
+            continue;
+        }
+        <div class="mb-3">
+            <div class="card shadow-sm" style="width:50%">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <p class="text-muted small mb-3">@workout.UserName, @workout.Date.ToShortDateString()</p>
+                        @if (workout.ActivityType == ActivityType.Cycling)
+                        {
+                           <CyclingIcon />
+                        }
+                        else if (workout.ActivityType == ActivityType.Running)
+                        {
+                           <RunningIcon />
+                        }
+                        else if (workout.ActivityType == ActivityType.Swimming)
+                        {
+                           <SwimmingIcon />
+                        }
+                    </div>
+                    <h5 class="card-title font-weight-bold mb-0">@workout.Title</h5>
+                    <p class="card-text small mb-4">@workout.Description</p>
+                    <div>
+                        <p class="small text-muted font-weight-light mb-0">Distance</p>
+                        <p class="mb-2">@workout.Distance.ToString("0.00") km</p>
+                    </div>
+                    @if (!String.IsNullOrEmpty(User))
+                    {
+                        <div class="d-flex align-items-center" style="cursor:pointer" @onclick="EventCallback.Factory.Create(this, () => LikePost(workout.Title))">
+                            @if (workout.UsersLiked.Contains(User))
+                            {
+                                <HeartFilledIcon Size="1rem" />
+                            }
+                            else
+                            {
+                                <HeartIcon Size="1rem" />
+                            }
+                            <p class="mb-0 mx-1">@workout.LikesCount</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
